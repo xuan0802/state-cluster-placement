@@ -7,7 +7,6 @@ def cal_avail(tree):
     for x in tree.keys():
         if tree[x]['n_node']:
             temp = temp*(1 - tree[x]['av']*cal_avail(tree[x]['n_node']))
-            print(temp)
         else:
             return tree[x]['av']
     return 1 - temp

@@ -22,7 +22,6 @@ def run(input_topo):
     Adzs = input_topo['Adzs']
 
     # init solution
-    N_STB = 0
     standby = {}
 
     # run algorithm
@@ -50,14 +49,12 @@ def run(input_topo):
         for d in DC_:
             for z,s in A_[d]:
                 if (C[d] > RD[active]) and (BW[active, d] > BWR[active] + BWT[active, d]):
-                    print(z,s)
                     standby[(active, i+1),(d,z,s)] = 1
                     C[d] = C[d] - RD[active]
                     i = i + 1
                     # add into availability tree
                     add_node(d, z, s, av_tree, Ad[d], Adz[d, z], Adzs[d, z, s])
                     # if total availability over threshold, then stop place standby
-                    print(cal_avail(av_tree))
                     if cal_avail(av_tree) > A_min:
                         stop = 1
                         break

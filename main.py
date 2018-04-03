@@ -1,9 +1,10 @@
-from constants import *
+
 from init_topo import initialize_input
 from algorithms import bandwidthgreedy
-import json
+from ultilities import print_placement
 
 if __name__ == '__main__':
     input_topo = initialize_input()
     result = bandwidthgreedy.run(input_topo)
-    print(json.dumps(result))
+    print_placement(result)
+
