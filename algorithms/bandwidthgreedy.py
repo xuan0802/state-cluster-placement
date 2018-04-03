@@ -33,34 +33,42 @@ def run(input_topo):
             if L[d, RN[active]] <= L_max:
                 DC_.append(d)
         # sort selected centers according to bandwidth
-        DC_.sort(key = lambda x: BW[active,x])
+        DC_.sort(key=lambda x: BW[active,x])
         # sort zones, servers according to total availability
         A_ = {}
         for d in DC_:
             A_[d] = []
             for z in AZ[d]:
                 for s in SV[d, z]:
-                    A_[d].append((z,s))
-            A_[d].sort(key = lambda x: Adz[d,x[0]]*Adzs[d,x[0],x[1]], reverse= True)
+                    A_[d].append((z, s))
+            A_[d].sort(key=lambda x: Adz[d, x[0]]*Adzs[d, x[0], x[1]], reverse=True)
         # place standby until the availability threshold is met
         i = 0
         stop = 0
         av_tree = {}
         for d in DC_:
-            for z,s in A_[d]:
-                if (C[d] > RD[active]) and (BW[active, d] > BWR[active] + BWT[active, d]):
-                    standby[(active, i+1),(d,z,s)] = 1
+            for z, s in A_[d]:
+                # check the whether server already was used
+                exist = False
+                for s_ in standby.keys():
+                    if s_[1] == (d, z, s):
+                        exist = True
+                        break
+                # if server not used and resources are enough
+                if not exist and (C[d] > RD[active]) and (BW[active, d] > BWR[active] + BWT[active, d]):
+                    # add standby to solution
+                    standby[(active, i+1), (d, z, s)] = 1
                     C[d] = C[d] - RD[active]
                     i = i + 1
                     # add into availability tree
                     add_node(d, z, s, av_tree, Ad[d], Adz[d, z], Adzs[d, z, s])
                     # if total availability over threshold, then stop place standby
                     if cal_avail(av_tree) > A_min:
-                        stop = 1
+                        stop = True
                         break
                 else:
                     break
-            if stop == 1:
+            if stop:
                 if i > 0:
                     BW[active, d] = BW[active, d] - BWR[active]
                 break
