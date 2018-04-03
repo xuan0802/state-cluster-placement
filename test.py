@@ -34,12 +34,6 @@ def add_node(d, z, s, av_tree):
 
 
 if __name__ == '__main__':
-    av_tree = {}
-    d = 'dc1'
-    z = 'az1'
-    s = 'sv1'
-    add_node(d, z, s, av_tree)
-    print(json.dumps(av_tree, indent=2))
-    print(cal_avail(av_tree))
-
+    x ="test"
+    print("can't place for active at %s" %x)
 

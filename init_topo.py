@@ -66,6 +66,7 @@ def initialize_input():
             Adz[(d, z)] = 0.95
             for s in SV[(d, z)]:
                 Adzs[(d, z, s)] = 0.9
+    Adz['dc1', 'az1'] = 0.99
 
     # create input data
     input = {}

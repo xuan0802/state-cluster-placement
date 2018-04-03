@@ -30,10 +30,10 @@ def run(input_topo):
         DC_ = []
         # select centers satisfying latency constraint
         for d in DC:
-            if L[d, RN[active]] <= L_max:
+            if L[d, RN[active]] <= L_max and d != active:
                 DC_.append(d)
         # sort selected centers according to bandwidth
-        DC_.sort(key=lambda x: BW[active,x])
+        DC_.sort(key=lambda x: BW[active, x])
         # sort zones, servers according to total availability
         A_ = {}
         for d in DC_:
@@ -63,7 +63,8 @@ def run(input_topo):
                     # add into availability tree
                     add_node(d, z, s, av_tree, Ad[d], Adz[d, z], Adzs[d, z, s])
                     # if total availability over threshold, then stop place standby
-                    if cal_avail(av_tree) > A_min:
+                    avail_r = cal_avail(av_tree)
+                    if avail_r > A_min:
                         stop = True
                         break
                 else:
@@ -71,9 +72,11 @@ def run(input_topo):
             if stop:
                 if i > 0:
                     BW[active, d] = BW[active, d] - BWR[active]
+                    print(avail_r)
                 break
         if not stop:
             print("model infeasible")
+            print("can't place for active at %s" %active)
             quit()
     return standby
 
