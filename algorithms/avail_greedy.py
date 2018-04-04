@@ -5,7 +5,7 @@ from availability_calculation import add_node, cal_avail
 
 
 def run(input_topo):
-    """run zone aware algorithms"""
+    """run availability greedy algorithms"""
     # get input
     DC = input_topo['DC']
     AZ = input_topo['AZ']
@@ -32,31 +32,34 @@ def run(input_topo):
         for d in DC:
             if L[d, RN[active]] <= L_max:
                 DC_.append(d)
-        # sort selected centers according to availability
-        DC_.sort(key=lambda x: Ad[x])
-        # sort zones, servers according to total availability
-        A_ = {}
+        # sort centers, zones, servers according to total availability
+        A_ = []
         for d in DC_:
-            A_[d] = []
             for z in AZ[d]:
                 for s in SV[d, z]:
-                    A_[d].append((z, s))
-            A_[d].sort(key=lambda x: Adz[d, x[0]]*Adzs[d, x[0], x[1]], reverse=True)
+                    A_.append((d, z, s))
+            A_.sort(key=lambda x: Ad[x[0]]*Adz[x[0], x[1]]*Adzs[x[0], x[1], x[2]], reverse=True)
         # place standby until the availability threshold is met
         stb_i = 0
-        stop = False
+        stop = 0
         av_tree = {}
-        for d in DC_:
-            for z, s in A_[d]:
-                # check the whether zone already was used
+        A_d = []
+        A_zs = []
+
+        for d, z, s in A_:
+            A_d.append(d)
+            A_zs.append((z, s))
+        for d in A_d:
+            for z, s in A_zs:
+                # check the whether server already was used
                 exist = False
                 for s_ in standby.keys():
-                    if s_[1][0] == d and s_[1][1] == z and s_[0][0] == active:
+                    if s_[1] == (d, z, s):
                         exist = True
                         break
                 # if server not used
                 if not exist:
-                    #  resources are enough
+                    # resources are enough
                     if (C[d] > RD[active]) and (BW[active, d] > BWR[active] + BWT[active, d]):
                         # add standby to solution
                         standby[(active, stb_i+1), (d, z, s)] = 1
@@ -69,6 +72,7 @@ def run(input_topo):
                         avail_r = cal_avail(av_tree)
                         if avail_r > A_min:
                             stop = True
+                            # if availability satisfied, stop placement
                             break
                     else:
                         # if not enough resources, check another center
@@ -84,8 +88,7 @@ def run(input_topo):
                 print(avail_r)
                 break
         if not stop:
-            print("zone aware model infeasible")
+            print("availability greedy model infeasible")
             print("can't place for active at %s" % active)
             quit()
     return standby
-

@@ -37,7 +37,7 @@ def initialize_input():
 
     # init resource demand
     for d in DC:
-        RD[d] = 1
+        RD[d] = 100
 
     # init latency matrix
     for d in DC:
@@ -58,6 +58,8 @@ def initialize_input():
         for d_ in DC:
             if d != d_:
                 BWT[(d, d_)] = 1
+            else:
+                BWT[(d, d_)] = 0
 
     # init availability tree
     for d in DC:
@@ -65,7 +67,7 @@ def initialize_input():
         for z in AZ[d]:
             Adz[(d, z)] = 0.95
             for s in SV[(d, z)]:
-                Adzs[(d, z, s)] = 0.9
+                Adzs[(d, z, s)] = 0.99
     Adz['dc1', 'az1'] = 0.99
 
     # create input data
