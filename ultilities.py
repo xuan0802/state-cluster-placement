@@ -1,8 +1,7 @@
 
-def print_placement(result):
+def print_placement(placement):
     """print placement nicely"""
-    result_ = result.keys()
-    result_.sort(key=lambda x: x[0][0])
-    for r in result_:
-        print(r)
+    placement.sort(key=lambda x: x['act'])
+    for p in placement:
+        print(p)
 

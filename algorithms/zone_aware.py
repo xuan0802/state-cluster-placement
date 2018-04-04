@@ -22,7 +22,7 @@ def run(input_topo):
     Adzs = input_topo['Adzs']
 
     # init solution
-    standby = {}
+    standby = []
 
     # run algorithm
     # place standby for each active function
@@ -50,8 +50,8 @@ def run(input_topo):
             for z, s in A_[d]:
                 # check the whether zone already was used
                 exist = False
-                for s_ in standby.keys():
-                    if s_[1][0] == d and s_[1][1] == z and s_[0][0] == active:
+                for s_ in standby:
+                    if s_['location'][0] == d and s_['location'][1] == z and s_['act'] == active:
                         exist = True
                         break
                 # if server not used
@@ -59,7 +59,7 @@ def run(input_topo):
                     #  resources are enough
                     if (C[d] > RD[active]) and (BW[active, d] > BWR[active] + BWT[active, d]):
                         # add standby to solution
-                        standby[(active, stb_i+1), (d, z, s)] = 1
+                        standby.append({'act': active, 'stb_i': stb_i, 'location': (d, z, s)})
                         # decrease compute resources
                         C[d] = C[d] - RD[active]
                         stb_i = stb_i + 1

@@ -5,5 +5,5 @@ N_SV = 100
 N_RN = 10
 C_SV = 10
 L_max = 200
-Af = 0.98
-A_min = 0.98
+Af = 0.99
+A_min = 0.99

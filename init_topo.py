@@ -54,21 +54,20 @@ def initialize_input():
 
     # init bandwidth consumption for state replication and transfer
     for d in DC:
-        BWR[d] = 1
+        BWR[d] = 5
         for d_ in DC:
             if d != d_:
-                BWT[(d, d_)] = 1
+                BWT[(d, d_)] = 10
             else:
                 BWT[(d, d_)] = 0
 
     # init availability tree
     for d in DC:
-        Ad[d] = 0.99
+        Ad[d] = 0.9999
         for z in AZ[d]:
-            Adz[(d, z)] = 0.95
+            Adz[(d, z)] = 0.999
             for s in SV[(d, z)]:
                 Adzs[(d, z, s)] = 0.99
-    Adz['dc1', 'az1'] = 0.99
 
     # create input data
     input = {}
