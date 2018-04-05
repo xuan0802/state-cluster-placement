@@ -77,7 +77,7 @@ def initialize_input():
                 Adzs[(d, z, s)] = 0.98
 
     # create input data
-    input = {}
+    input = dict()
     input['DC'] = DC
     input['AZ'] = AZ
     input['SV'] = SV

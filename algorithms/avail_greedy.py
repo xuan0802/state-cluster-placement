@@ -44,13 +44,18 @@ def run(input_topo):
         stop = 0
         av_tree = {}
         A_d = []
-        A_zs = []
+        A_zs = {}
 
         for d, z, s in A_:
-            A_d.append(d)
-            A_zs.append((z, s))
+            if d not in A_d:
+                A_d.append(d)
+                A_zs[d] = []
+                A_zs[d].append((z, s))
+            else:
+                A_zs[d].append((z, s))
+
         for d in A_d:
-            for z, s in A_zs:
+            for z, s in A_zs[d]:
                 # check the whether server already was used
                 exist = False
                 for s_ in standby:
