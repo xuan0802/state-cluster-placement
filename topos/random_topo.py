@@ -30,7 +30,7 @@ def initialize_input():
     for d in DC:
         for z in AZ[d]:
             SV[(d, z)] = []
-            N_SV = randint(500, 1000)
+            N_SV = randint(10, 100)
             for i in range(N_SV):
                 SV[(d, z)].append('sv' + str(i))
 
@@ -49,7 +49,7 @@ def initialize_input():
     # init latency matrix
     for d in DC:
         for n in RN.values():
-            L[(d, n)] = randint(150, 205)
+            L[(d, n)] = randint(150, 250)
 
     # init link bandwidth
     for d in DC:
