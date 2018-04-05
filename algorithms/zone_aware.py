@@ -32,50 +32,52 @@ def run(input_topo):
         for d in DC:
             if L[d, RN[active]] <= L_max:
                 DC_.append(d)
-        # sort selected centers according to availability
-        DC_.sort(key=lambda x: Ad[x])
-        # sort zones, servers according to total availability
-        A_ = {}
+        # sort centers, zones, servers according to total availability
+        A_ = []
         for d in DC_:
-            A_[d] = []
             for z in AZ[d]:
                 for s in SV[d, z]:
-                    A_[d].append((z, s))
-            A_[d].sort(key=lambda x: Adz[d, x[0]]*Adzs[d, x[0], x[1]], reverse=True)
+                    A_.append((d, z, s))
+            A_.sort(key=lambda x: Ad[x[0]]*Adz[x[0], x[1]]*Adzs[x[0], x[1], x[2]], reverse=True)
         # place standby until the availability threshold is met
         stb_i = 0
         stop = False
         av_tree = {}
-        for d in DC_:
-            for z, s in A_[d]:
-                # check the whether zone already was used
-                exist = False
-                for s_ in standby:
-                    if s_['location'][0] == d and s_['location'][1] == z and s_['act'] == active:
-                        exist = True
-                        break
-                # if server not used
-                if not exist:
-                    #  resources are enough
-                    if (C[d] > RD[active]) and (BW[active, d] > BWR[active] + BWT[active, d]):
-                        # add standby to solution
-                        standby.append({'act': active, 'stb_i': stb_i, 'location': (d, z, s)})
-                        # decrease compute resources
-                        C[d] = C[d] - RD[active]
-                        stb_i = stb_i + 1
-                        # add into availability tree
-                        add_node(d, z, s, av_tree, Ad[d], Adz[d, z], Adzs[d, z, s])
-                        # if total availability over threshold, then stop place standby
-                        avail_r = cal_avail(av_tree)
-                        if avail_r > A_min:
-                            stop = True
-                            break
-                    else:
-                        # if not enough resources, check another center
+        d_has_stb = []
+
+        for d, z, s in A_:
+            # check the whether zone already was used
+            exist = False
+            for s_ in standby:
+                if s_['location'][0] == d and s_['location'][1] == z and s_['act'] == active:
+                    exist = True
+                    break
+            # if zone not used
+            if not exist:
+                #  resources are enough
+                if (C[d] > RD[active]) and (BW[active, d] > BWR[active] + BWT[active, d]):
+                    # add standby to solution
+                    standby.append({'act': active, 'stb_i': stb_i, 'location': (d, z, s)})
+                    # decrease compute resources
+                    C[d] = C[d] - RD[active]
+                    stb_i = stb_i + 1
+                    # decrease link bandwidth
+                    if d not in d_has_stb:
+                        d_has_stb.append(d)
+                        BW[active, d] = BW[active, d] - BWR[active]
+                    # add into availability tree
+                    add_node(d, z, s, av_tree, Ad[d], Adz[d, z], Adzs[d, z, s])
+                    # if total availability over threshold, then stop place standby
+                    avail_r = cal_avail(av_tree)
+                    if avail_r > A_min:
+                        stop = True
                         break
                 else:
-                    # if server already used, check another server
+                    # if not enough resources, check another server
                     continue
+            else:
+                # if zone already used, check another server
+                continue
             # decrease link bandwidth if there is any standby
             if stb_i > 0:
                 BW[active, d] = BW[active, d] - BWR[active]

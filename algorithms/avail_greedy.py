@@ -43,51 +43,44 @@ def run(input_topo):
         stb_i = 0
         stop = 0
         av_tree = {}
-        A_d = []
-        A_zs = {}
+        d_has_stb = []
 
         for d, z, s in A_:
-            if d not in A_d:
-                A_d.append(d)
-                A_zs[d] = []
-                A_zs[d].append((z, s))
-            else:
-                A_zs[d].append((z, s))
-
-        for d in A_d:
-            for z, s in A_zs[d]:
-                # check the whether server already was used
-                exist = False
-                for s_ in standby:
-                    if s_['location'] == (d, z, s):
-                        exist = True
-                        break
-                # if server not used
-                if not exist:
-                    # resources are enough
-                    if (C[d] > RD[active]) and (BW[active, d] > BWR[active] + BWT[active, d]):
-                        # add standby to solution
-                        standby.append({'act': active, 'stb_i': stb_i, 'location': (d, z, s)})
-                        # decrease compute resources
-                        C[d] = C[d] - RD[active]
-                        stb_i = stb_i + 1
-                        # add into availability tree
-                        add_node(d, z, s, av_tree, Ad[d], Adz[d, z], Adzs[d, z, s])
-                        # if total availability over threshold, then stop place standby
-                        avail_r = cal_avail(av_tree)
-                        if avail_r > A_min:
-                            stop = True
-                            # if availability satisfied, stop placement
-                            break
-                    else:
-                        # if not enough resources, check another center
+            # check the whether server already was used
+            exist = False
+            for s_ in standby:
+                if s_['location'] == (d, z, s):
+                    exist = True
+                    break
+            # if server not used
+            if not exist:
+                # resources are enough
+                if (C[d] > RD[active]) and (BW[active, d] > BWR[active] + BWT[active, d]):
+                    # add standby to solution
+                    standby.append({'act': active, 'stb_i': stb_i, 'location': (d, z, s)})
+                    # decrease compute resources
+                    C[d] = C[d] - RD[active]
+                    stb_i = stb_i + 1
+                    # decrease link bandwidth
+                    if d not in d_has_stb:
+                        d_has_stb.append(d)
+                        BW[active, d] = BW[active, d] - BWR[active]
+                    # add into availability tree
+                    add_node(d, z, s, av_tree, Ad[d], Adz[d, z], Adzs[d, z, s])
+                    # if total availability over threshold, then stop place standby
+                    avail_r = cal_avail(av_tree)
+                    if avail_r > A_min:
+                        stop = True
+                        # if availability satisfied, stop placement
                         break
                 else:
-                    # if server already used, check another server
+                    # if not enough resources, check another server
                     continue
-            # decrease link bandwidth if there is any standby
-            if stb_i > 0:
-                BW[active, d] = BW[active, d] - BWR[active]
+
+            else:
+                # if not exist, check another server
+                continue
+
             # if availability satisfied, stop placement
             if stop:
                 print(avail_r)
