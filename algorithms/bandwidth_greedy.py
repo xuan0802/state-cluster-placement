@@ -85,7 +85,6 @@ def run(input_topo):
                     continue
             # if availability satisfied, stop placement
             if stop:
-                print(avail_r)
                 break
         if not stop:
             print("bandwidth greedy model infeasible")
