@@ -10,5 +10,6 @@ python_version = "3.5"
 matplotlib = "*"
 ipython = "*"
 pandas = "*"
+jupyter = "*"
 
 [dev-packages]
