@@ -11,5 +11,6 @@ matplotlib = "*"
 ipython = "*"
 pandas = "*"
 jupyter = "*"
+setuptools = "*"
 
 [dev-packages]

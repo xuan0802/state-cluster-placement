@@ -1,4 +1,4 @@
-from availability_calculation import add_node, cal_avail
+from state_cluster_placement.availability_calculation import add_node, cal_avail
 
 
 def evaluate(placement, input_topo):

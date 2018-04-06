@@ -1,7 +1,7 @@
 import sys, os.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from constants import *
-from availability_calculation import add_node, cal_avail
+from state_cluster_placement.constants import *
+from state_cluster_placement.availability_calculation import add_node, cal_avail
 
 
 def run(input_topo):

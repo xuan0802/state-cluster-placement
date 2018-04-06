@@ -1,9 +1,10 @@
 
-from topos.random_topo import initialize_input
-from algorithms import bandwidth_greedy, zone_aware, avail_greedy
-from evaluation import evaluate
+from state_cluster_placement.topos.random_topo import initialize_input
+from state_cluster_placement.algorithms import bandwidth_greedy, zone_aware, avail_greedy
+from state_cluster_placement.evaluation import evaluate
 
-if __name__ == '__main__':
+
+def main():
     print("------------bandwidth greedy----------")
     input_topo = initialize_input()
     placement_result = bandwidth_greedy.run(input_topo)
