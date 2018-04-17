@@ -22,12 +22,12 @@ def initialize_input():
     for d in DC:
         AZ[d] = []
         for i in range(N_AZ):
-            AZ[d].append('az' + str(i))
+            AZ[d].append(d + 'az' + str(i))
     for d in DC:
         for z in AZ[d]:
             SV[(d, z)] = []
             for i in range(N_SV):
-                SV[(d, z)].append('sv' + str(i))
+                SV[(d, z)].append(z + 'sv' + str(i))
     for i in range(N_RN):
         RN['dc' + str(i)] = 'rn' + str(i)
 
@@ -70,7 +70,7 @@ def initialize_input():
                 Adzs[(d, z, s)] = 0.99
 
     # create input data
-    input = {}
+    input = dict()
     input['DC'] = DC
     input['AZ'] = AZ
     input['SV'] = SV

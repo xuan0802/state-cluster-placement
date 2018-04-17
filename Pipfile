@@ -12,5 +12,6 @@ ipython = "*"
 pandas = "*"
 jupyter = "*"
 setuptools = "*"
+ujson = "*"
 
 [dev-packages]

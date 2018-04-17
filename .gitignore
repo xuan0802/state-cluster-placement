@@ -1,2 +1,5 @@
 *.pyc
 .idea/
+build/
+dist/
+state_cluster_placement.egg-info/

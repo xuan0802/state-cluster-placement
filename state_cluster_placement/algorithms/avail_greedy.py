@@ -88,5 +88,4 @@ def run(input_topo):
         if not stop:
             print("availability greedy model infeasible")
             print("can't place for active at %s" % active)
-            quit()
     return standby

@@ -26,13 +26,13 @@ def initialize_input():
         AZ[d] = []
         N_AZ = randint(3, 8)
         for i in range(N_AZ):
-            AZ[d].append('az' + str(i))
+            AZ[d].append(d + 'az' + str(i))
     for d in DC:
         for z in AZ[d]:
             SV[(d, z)] = []
-            N_SV = randint(10, 100)
+            N_SV = randint(1, 10)
             for i in range(N_SV):
-                SV[(d, z)].append('sv' + str(i))
+                SV[(d, z)].append(z + 'sv' + str(i))
 
     for i in range(N_RN):
         RN['dc' + str(i)] = 'rn' + str(i)
@@ -69,12 +69,13 @@ def initialize_input():
                 BWT[(d, d_)] = 0
 
     # init availability tree
+    avail_list = [0.99, 0.999, 0.9999]
     for d in DC:
-        Ad[d] = 0.98 + random()/100
+        Ad[d] = choice(avail_list)
         for z in AZ[d]:
-            Adz[(d, z)] = 0.98 + random()/100
+            Adz[(d, z)] = choice(avail_list)
             for s in SV[(d, z)]:
-                Adzs[(d, z, s)] = 0.98
+                Adzs[(d, z, s)] = choice(avail_list)
 
     # create input data
     input = dict()

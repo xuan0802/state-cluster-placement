@@ -1,9 +1,9 @@
-import json
-
+import random
+import ujson
+from ast import literal_eval
 
 if __name__ == '__main__':
-    x = {}
-    x['d'] = 'a'
-    x['d'] = 'a'
-    print(x)
-
+    t = []
+    x = [3, 4]
+    t = x
+    print(t)

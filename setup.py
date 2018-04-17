@@ -9,9 +9,5 @@ setup(
     author='xuan',
     author_email='xuan@dcn.ssu.ac.kr',
     description='placement algorithms for state management functions',
-    entry_points={
-        'console_scripts': [
-            'test_script = state_cluster_placement.main:main'
-        ]
-    }
+    scripts=['state_cluster_placement/main.py']
 )
