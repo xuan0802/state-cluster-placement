@@ -4,7 +4,7 @@ from state_cluster_placement.constants import *
 from state_cluster_placement.availability_calculation import add_node, cal_avail
 
 
-def run(input_topo):
+def run(input_topo, A_min):
     """run zone aware algorithms"""
     # get input
     DC = input_topo['DC']

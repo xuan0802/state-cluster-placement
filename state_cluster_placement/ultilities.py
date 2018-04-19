@@ -1,5 +1,8 @@
 import ujson
 from ast import literal_eval
+import numpy as np
+from matplotlib import pyplot as plt
+
 
 def print_placement(placement):
     """print placement nicely"""
@@ -77,3 +80,25 @@ def load_topo(filename):
     input['Adzs'] = Adzs
 
     return input
+
+
+def draw_bar_chart(xtick, *algorithms):
+    """draw a bar chart"""
+    fig, ax = plt.subplots()
+    color_list = ['blue', 'red', 'green', 'black', 'yellow']
+    index = np.arange(len(xtick))
+    bar_width = 0.3
+    opacity = 0.8
+    i = 0
+    for algo in algorithms:
+        print(algo)
+        ax.bar(index + i * bar_width, algo['data'], bar_width, alpha=opacity, color=color_list[i], label=algo['label'])
+        i = i + 1
+    ax.set_ylim(0.995, 1)
+    ax.set_xlabel('A_min')
+    ax.set_ylabel('Average availability')
+    ax.set_xticks(index + bar_width)
+    ax.set_xticklabels(xtick)
+    ax.legend()
+    fig.tight_layout()
+    plt.show()

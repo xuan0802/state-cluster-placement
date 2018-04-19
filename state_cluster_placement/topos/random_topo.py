@@ -22,15 +22,17 @@ def initialize_input():
     # init set of cloud centers, zones, servers, radio nodes
     for i in range(N_DC):
         DC.append('dc' + str(i))
+        zone_num_list = [2, 3, 5]
     for d in DC:
         AZ[d] = []
-        N_AZ = randint(3, 8)
+        N_AZ = choice(zone_num_list)
         for i in range(N_AZ):
             AZ[d].append(d + 'az' + str(i))
     for d in DC:
         for z in AZ[d]:
             SV[(d, z)] = []
-            N_SV = randint(1, 10)
+            server_num_list = [20, 30, 50, 100]
+            N_SV = choice(server_num_list)
             for i in range(N_SV):
                 SV[(d, z)].append(z + 'sv' + str(i))
 
@@ -38,13 +40,13 @@ def initialize_input():
         RN['dc' + str(i)] = 'rn' + str(i)
 
     # init resource capacity
-    C_SV = randint(5, 50)
+    center_capacity_list = [1000, 1500, 2500, 5000]
     for d in DC:
-        C[d] = N_AZ*N_SV*C_SV
+        C[d] = choice(center_capacity_list)
 
     # init resource demand
     for d in DC:
-        RD[d] = 100
+        RD[d] = randint(10, 20)
 
     # init latency matrix
     for d in DC:
@@ -52,24 +54,27 @@ def initialize_input():
             L[(d, n)] = randint(150, 250)
 
     # init link bandwidth
+    link_bw_list = [100, 500, 1000, 2000, 5000, 10000]
     for d in DC:
         for d_ in DC:
             if d != d_:
-                BW[(d, d_)] = randint(0, 1000)
+                BW[(d, d_)] = choice(link_bw_list)
             else:
-                BW[(d, d_)] = 1000
+                BW[(d, d_)] = 10000
 
     # init bandwidth consumption for state replication and transfer
+    bwr_list = [100, 150, 200]
+    bwt_list = [10, 20, 50, 100]
     for d in DC:
-        BWR[d] = randint(100, 150)
+        BWR[d] = choice(bwr_list)
         for d_ in DC:
             if d != d_:
-                BWT[(d, d_)] = 200
+                BWT[(d, d_)] = choice(bwt_list)
             else:
                 BWT[(d, d_)] = 0
 
     # init availability tree
-    avail_list = [0.99, 0.999, 0.9999]
+    avail_list = [0.9, 0.99, 0.999]
     for d in DC:
         Ad[d] = choice(avail_list)
         for z in AZ[d]:
