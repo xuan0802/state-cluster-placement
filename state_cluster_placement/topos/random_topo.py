@@ -51,7 +51,13 @@ def initialize_input():
     # init latency matrix
     for d in DC:
         for n in RN.values():
-            L[(d, n)] = randint(150, 250)
+            if n == RN[d]:
+                # set low latency for center and its assigned
+                # radio nodes to satisfy latency requirement
+                L[d, n] = 150
+            else:
+                # to not assigned radio nodes --> set randomly
+                L[(d, n)] = randint(150, 250)
 
     # init link bandwidth
     link_bw_list = [100, 500, 1000, 2000, 5000, 10000]

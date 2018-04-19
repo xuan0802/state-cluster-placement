@@ -41,15 +41,9 @@ def evaluate(placement, input_topo):
 
     # calculate total link bandwidth required
     total_bw = 0
-    dict_location = {}
     for active in DC:
-        dict_location[active] = []
         for p in placement:
-            if p['location'][0] not in dict_location[active]:
-                dict_location[active].append(p['location'][0])
-    for active in DC:
-        for d in dict_location[active]:
-            if active != d:
+            if active != p['location'][0] and p['act'] == active:
                 total_bw = total_bw + BWR[active]
     perf_result['total_bw'] = total_bw
 

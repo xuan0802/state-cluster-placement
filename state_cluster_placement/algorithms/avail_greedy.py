@@ -43,7 +43,6 @@ def run(input_topo, A_min):
         stb_i = 0
         stop = 0
         av_tree = {}
-        d_has_stb = []
 
         for d, z, s in A_:
             # check the whether server already was used
@@ -62,9 +61,7 @@ def run(input_topo, A_min):
                     C[d] = C[d] - RD[active]
                     stb_i = stb_i + 1
                     # decrease link bandwidth
-                    if d not in d_has_stb:
-                        d_has_stb.append(d)
-                        BW[active, d] = BW[active, d] - BWR[active]
+                    BW[active, d] = BW[active, d] - BWR[active]
                     # add into availability tree
                     add_node(d, z, s, av_tree, Ad[d], Adz[d, z], Adzs[d, z, s])
                     # if total availability over threshold, then stop place standby
