@@ -64,9 +64,12 @@ def initialize_input():
     for d in DC:
         for d_ in DC:
             if d != d_:
-                BW[(d, d_)] = choice(link_bw_list)
+                if (d, d_) in BW.keys():
+                    BW[d, d_] = BW[d_, d]
+                else:
+                    BW[(d, d_)] = choice(link_bw_list)
             else:
-                BW[(d, d_)] = 10000
+                BW[(d, d_)] = 20000
 
     # init bandwidth consumption for state replication and transfer
     bwr_list = [100, 150, 200]

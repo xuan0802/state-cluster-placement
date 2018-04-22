@@ -5,7 +5,7 @@ from state_cluster_placement.availability_calculation import add_node, cal_avail
 
 
 def run(input_topo, A_min):
-    """run availability greedy algorithms"""
+    """run zone aware algorithms"""
     # get input
     DC = input_topo['DC']
     AZ = input_topo['AZ']
@@ -41,19 +41,19 @@ def run(input_topo, A_min):
             avail_sorted_dc_az_sv_list.sort(key=lambda x: Ad[x[0]]*Adz[x[0], x[1]]*Adzs[x[0], x[1], x[2]], reverse=True)
         # place standby until the availability threshold is met
         stb_i = 0
-        stop = 0
+        stop = False
         av_tree = {}
 
         for d, z, s in avail_sorted_dc_az_sv_list:
-            # check the whether server already was used
+            # check the whether zone already was used
             exist = False
             for s_ in standby:
-                if s_['location'] == (d, z, s):
+                if s_['location'][0] == d and s_['location'][1] == z and s_['act'] == active:
                     exist = True
                     break
-            # if server not used
+            # if zone not used
             if not exist:
-                # resources are enough
+                #  resources are enough
                 if (C[d] > RD[active]) and (BW[active, d] > BWR[active] + BWT[active, d]):
                     # add standby to solution
                     standby.append({'act': active, 'stb_i': stb_i, 'location': (d, z, s)})
@@ -71,21 +71,19 @@ def run(input_topo, A_min):
                     avail_r = cal_avail(av_tree)
                     if avail_r > A_min:
                         stop = True
-                        # if availability satisfied, stop placement
                         break
                 else:
                     # if not enough resources, check another server
                     continue
-
             else:
-                # if not exist, check another server
+                # if zone already used, check another server
                 continue
-
             # if availability satisfied, stop placement
             if stop:
                 print(avail_r)
                 break
         if not stop:
-            print("availability greedy model infeasible")
+            print("zone aware model infeasible")
             print("can't place for active at %s" % active)
     return standby
+

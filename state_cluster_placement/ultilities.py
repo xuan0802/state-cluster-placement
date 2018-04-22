@@ -12,10 +12,10 @@ def print_placement(placement):
         print(p)
 
 
-def save_topo(input_topo, filename):
+def save_to_file(input_dict, filename):
     """save topo to a json file"""
     f = open(filename, "w")
-    ujson.dump(input_topo, f)
+    ujson.dump(input_dict, f)
     f.close()
 
 
@@ -88,7 +88,7 @@ def draw_bar_chart(xtick, title, *algorithms):
     fig, ax = plt.subplots()
     color_list = ['blue', 'red', 'green', 'black', 'yellow']
     index = np.arange(len(xtick))
-    bar_width = 0.3
+    bar_width = 0.2
     opacity = 0.8
     i = 0
     for algo in algorithms:

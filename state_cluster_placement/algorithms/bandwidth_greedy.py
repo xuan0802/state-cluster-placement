@@ -27,28 +27,28 @@ def run(input_topo, A_min):
     # run algorithm
     # place standby for each active function
     for active in DC:
-        DC_ = []
+        satisfied_latency_dc_list = []
         # select centers satisfying latency constraint
         for d in DC:
             if L[d, RN[active]] <= L_max:
-                DC_.append(d)
+                satisfied_latency_dc_list.append(d)
         # sort selected centers according to bandwidth
-        DC_.sort(key=lambda x: BW[active, x])
+        satisfied_latency_dc_list.sort(key=lambda x: BW[active, x])
         # sort zones, servers according to total availability
-        A_ = {}
-        for d in DC_:
-            A_[d] = []
+        avail_sorted_az_sv_list = {}
+        for d in satisfied_latency_dc_list:
+            avail_sorted_az_sv_list[d] = []
             for z in AZ[d]:
                 for s in SV[d, z]:
-                    A_[d].append((z, s))
-            A_[d].sort(key=lambda x: Adz[d, x[0]]*Adzs[d, x[0], x[1]], reverse=True)
+                    avail_sorted_az_sv_list[d].append((z, s))
+            avail_sorted_az_sv_list[d].sort(key=lambda x: Adz[d, x[0]]*Adzs[d, x[0], x[1]], reverse=True)
         # place standby until the availability threshold is met
         stb_i = 0
         stop = 0
         av_tree = {}
 
-        for d in DC_:
-            for z, s in A_[d]:
+        for d in satisfied_latency_dc_list:
+            for z, s in avail_sorted_az_sv_list[d]:
                 # check the whether server already was used
                 exist = False
                 for s_ in standby:
@@ -61,11 +61,14 @@ def run(input_topo, A_min):
                     if (C[d] > RD[active]) and (BW[active, d] > BWR[active] + BWT[active, d]):
                         # add standby to solution
                         standby.append({'act': active, 'stb_i': stb_i, 'location': (d, z, s)})
+                        # remove server out of data center
+                        SV[d, z].remove(s)
                         # decrease compute resources
                         C[d] = C[d] - RD[active]
                         stb_i = stb_i + 1
                         # decrease link bandwidth
                         BW[active, d] = BW[active, d] - BWR[active]
+                        BW[d, active] = BW[d, active] - BWR[active]
                         # add into availability tree
                         add_node(d, z, s, av_tree, Ad[d], Adz[d, z], Adzs[d, z, s])
                         # if total availability over threshold, then stop place standby
