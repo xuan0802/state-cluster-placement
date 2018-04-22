@@ -1,5 +1,10 @@
 from state_cluster_placement.constants import *
 
+N_DC = 10
+N_RN = 10
+N_AZ = 5
+N_SV =100
+C_SV = 200
 
 def initialize_input():
     DC = []

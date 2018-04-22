@@ -12,9 +12,6 @@ def initialize_input():
     C = {}
     L = {}
     BW = {}
-    RD = {}
-    BWR = {}
-    BWT = {}
     Ad = {}
     Adz = {}
     Adzs = {}
@@ -44,10 +41,6 @@ def initialize_input():
     for d in DC:
         C[d] = choice(center_capacity_list)
 
-    # init resource demand
-    for d in DC:
-        RD[d] = randint(10, 20)
-
     # init latency matrix
     for d in DC:
         for n in RN.values():
@@ -57,7 +50,7 @@ def initialize_input():
                 L[d, n] = 150
             else:
                 # to not assigned radio nodes --> set randomly
-                L[(d, n)] = randint(150, 250)
+                L[(d, n)] = randint(150, 220)
 
     # init link bandwidth
     link_bw_list = [100, 500, 1000, 2000, 5000, 10000]
@@ -70,17 +63,6 @@ def initialize_input():
                     BW[(d, d_)] = choice(link_bw_list)
             else:
                 BW[(d, d_)] = 20000
-
-    # init bandwidth consumption for state replication and transfer
-    bwr_list = [100, 150, 200]
-    bwt_list = [10, 20, 50, 100]
-    for d in DC:
-        BWR[d] = choice(bwr_list)
-        for d_ in DC:
-            if d != d_:
-                BWT[(d, d_)] = choice(bwt_list)
-            else:
-                BWT[(d, d_)] = 0
 
     # init availability tree
     avail_list = [0.9, 0.99, 0.999]
@@ -100,9 +82,6 @@ def initialize_input():
     input['C'] = C
     input['L'] = L
     input['BW'] = BW
-    input['BWR'] = BWR
-    input['BWT'] = BWT
-    input['RD'] = RD
     input['Ad'] = Ad
     input['Adz'] = Adz
     input['Adzs'] = Adzs

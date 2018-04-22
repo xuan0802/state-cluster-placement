@@ -28,9 +28,6 @@ def load_topo(filename):
     C = {}
     L = {}
     BW = {}
-    RD = {}
-    BWR = {}
-    BWT = {}
     Ad = {}
     Adz = {}
     Adzs = {}
@@ -51,12 +48,6 @@ def load_topo(filename):
         L[literal_eval(i)] = topo['L'][i]
     for i in topo['BW'].keys():
         BW[literal_eval(i)] = topo['BW'][i]
-    for i in topo['RD'].keys():
-        RD[i] = topo['RD'][i]
-    for i in topo['BWR'].keys():
-        BWR[i] = topo['BWR'][i]
-    for i in topo['BWT'].keys():
-        BWT[literal_eval(i)] = topo['BWT'][i]
     for i in topo['Ad'].keys():
         Ad[i] = topo['Ad'][i]
     for i in topo['Adz'].keys():
@@ -73,9 +64,6 @@ def load_topo(filename):
     input['C'] = C
     input['L'] = L
     input['BW'] = BW
-    input['BWR'] = BWR
-    input['BWT'] = BWT
-    input['RD'] = RD
     input['Ad'] = Ad
     input['Adz'] = Adz
     input['Adzs'] = Adzs

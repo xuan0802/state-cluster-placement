@@ -1,7 +1,7 @@
 from state_cluster_placement.availability_calculation import add_node, cal_avail
+from state_cluster_placement.constants import *
 
-
-def evaluate(placement, input_topo):
+def evaluate(placement, input_topo, session_req_rate, ue_num, handover_frequency):
     """calculate performance values"""
     # get input
     DC = input_topo['DC']
@@ -11,13 +11,27 @@ def evaluate(placement, input_topo):
     C = input_topo['C']
     L = input_topo['L']
     BW = input_topo['BW']
-    RD = input_topo['RD']
-    BWR = input_topo['BWR']
-    BWT = input_topo['BWT']
     Ad = input_topo['Ad']
     Adz = input_topo['Adz']
     Adzs = input_topo['Adzs']
 
+    RD = {}
+    BWR = {}
+    BWT = {}
+    # calculate resource demand, bw transfer and replication
+    # resource demand
+    for d in DC:
+        RD[d] = RD_init + RD_unit*ue_num[d]*session_req_rate[d]
+    # bandwidth consumption for state replication and transfer
+    for d in DC:
+        BWR[d] = ue_num[d]*(BWR_attach + BWR_ses_req*session_req_rate[d])
+        for d_ in DC:
+            if d != d_:
+                BWT[(d, d_)] = handover_frequency[d, d_]*BWT_unit
+            else:
+                BWT[(d, d_)] = 0
+
+    # create a dict to store performance results
     perf_result = dict()
 
     # calculate the number of standby functions deployed

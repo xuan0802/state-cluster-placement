@@ -4,7 +4,7 @@ from state_cluster_placement.constants import *
 from state_cluster_placement.availability_calculation import add_node, cal_avail
 
 
-def run(input_topo, A_min):
+def run(input_topo, A_min, session_req_rate, ue_num, handover_frequency):
     """run availability greedy algorithms"""
     # get input
     DC = input_topo['DC']
@@ -14,12 +14,25 @@ def run(input_topo, A_min):
     C = input_topo['C']
     L = input_topo['L']
     BW = input_topo['BW']
-    RD = input_topo['RD']
-    BWR = input_topo['BWR']
-    BWT = input_topo['BWT']
     Ad = input_topo['Ad']
     Adz = input_topo['Adz']
     Adzs = input_topo['Adzs']
+
+    RD = {}
+    BWR = {}
+    BWT = {}
+    # calculate resource demand, bw transfer and replication
+    # resource demand
+    for d in DC:
+        RD[d] = RD_init + RD_unit*ue_num[d]*session_req_rate[d]
+    # bandwidth consumption for state replication and transfer
+    for d in DC:
+        BWR[d] = ue_num[d]*(BWR_attach + BWR_ses_req*session_req_rate[d])
+        for d_ in DC:
+            if d != d_:
+                BWT[(d, d_)] = handover_frequency[d, d_]*BWT_unit
+            else:
+                BWT[(d, d_)] = 0
 
     # init solution
     standby = []

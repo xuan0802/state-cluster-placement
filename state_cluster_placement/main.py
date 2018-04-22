@@ -5,7 +5,7 @@ from state_cluster_placement.evaluation import evaluate
 from state_cluster_placement.ultilities import save_to_file, load_topo, draw_bar_chart
 from copy import deepcopy
 from state_cluster_placement.constants import *
-
+from random import choice
 
 if __name__ == '__main__':
     """run all algorithms and make plots"""
@@ -16,6 +16,22 @@ if __name__ == '__main__':
     # # load topo from a file
     topo = load_topo("topo_json/topo.json")
 
+    # create resource demand and bandwidth transfer and replication
+    session_req_rate_list = [7]
+    ue_num_list = [1000]
+    handover_frequency_list = [1000]
+    session_req_rate = {}
+    ue_num = {}
+    handover_frequency = {}
+    for d in topo['DC']:
+        session_req_rate[d] = choice(session_req_rate_list)
+        ue_num[d] = choice(ue_num_list)
+    for d in topo['DC']:
+        for d_ in topo['DC']:
+            if d != d_:
+                handover_frequency[d, d_] = choice(handover_frequency_list)
+            else:
+                handover_frequency[d, d_] = 0
     # obtain plot data
     A_min_list = [0.99, 0.999, 0.9995]
     # create dict to store performance data
@@ -41,9 +57,9 @@ if __name__ == '__main__':
         # make a deep copy of topo
         input_topo0 = deepcopy(topo)
         # run algorithm
-        placement_result0 = bandwidth_greedy.run(input_topo0, a_m)
+        placement_result0 = bandwidth_greedy.run(input_topo0, a_m, session_req_rate, ue_num, handover_frequency)
         # calculate performance metrics
-        perf0 = evaluate(placement_result0, topo)
+        perf0 = evaluate(placement_result0, topo, session_req_rate, ue_num, handover_frequency)
         print(perf0)
         # store into a dict
         bw_gr['aver_avail'].append(perf0['aver_avail'])
@@ -52,8 +68,8 @@ if __name__ == '__main__':
 
         print("------------zone greedy---------------")
         input_topo1 = deepcopy(topo)
-        placement_result1 = zone_greedy.run(input_topo1, a_m)
-        perf1 = evaluate(placement_result1, topo)
+        placement_result1 = zone_greedy.run(input_topo1, a_m, session_req_rate, ue_num, handover_frequency)
+        perf1 = evaluate(placement_result1, topo, session_req_rate, ue_num, handover_frequency)
         print(perf1)
         zo_gr['aver_avail'].append(perf1['aver_avail'])
         zo_gr['num_stb_total'].append(perf1['num_stb_total'])
@@ -61,8 +77,8 @@ if __name__ == '__main__':
 
         print("------------availability greedy-----")
         input_topo2 = deepcopy(topo)
-        placement_result2 = avail_greedy.run(input_topo2, a_m)
-        perf2 = evaluate(placement_result2, topo)
+        placement_result2 = avail_greedy.run(input_topo2, a_m, session_req_rate, ue_num, handover_frequency)
+        perf2 = evaluate(placement_result2, topo, session_req_rate, ue_num, handover_frequency)
         print(perf2)
         av_gr['aver_avail'].append(perf2['aver_avail'])
         av_gr['num_stb_total'].append(perf2['num_stb_total'])
@@ -70,8 +86,8 @@ if __name__ == '__main__':
 
         print("------------zone aware-------------")
         input_topo3 = deepcopy(topo)
-        placement_result3 = zone_aware.run(input_topo3, a_m)
-        perf3 = evaluate(placement_result3, topo)
+        placement_result3 = zone_aware.run(input_topo3, a_m, session_req_rate, ue_num, handover_frequency)
+        perf3 = evaluate(placement_result3, topo, session_req_rate, ue_num, handover_frequency)
         print(perf3)
         zo_aw['aver_avail'].append(perf3['aver_avail'])
         zo_aw['num_stb_total'].append(perf3['num_stb_total'])
