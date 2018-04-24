@@ -27,7 +27,7 @@ def evaluate(placement, input_topo, session_req_rate, ue_num, handover_frequency
         BWR[d] = ue_num[d]*(BWR_attach + BWR_ses_req*session_req_rate[d])
         for d_ in DC:
             if d != d_:
-                BWT[(d, d_)] = handover_frequency[d, d_]*BWT_unit
+                BWT[(d, d_)] = handover_frequency[d, d_] * BWT_handover
             else:
                 BWT[(d, d_)] = 0
 

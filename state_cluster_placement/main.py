@@ -19,7 +19,7 @@ if __name__ == '__main__':
     # create resource demand and bandwidth transfer and replication
     session_req_rate_list = [7]
     ue_num_list = [1000]
-    handover_frequency_list = [1000]
+    handover_frequency_list = [1500]
     session_req_rate = {}
     ue_num = {}
     handover_frequency = {}
@@ -41,14 +41,14 @@ if __name__ == '__main__':
     av_gr['label'] = "AVGR"
     zo_gr = dict()
     zo_gr['label'] = "ZOGR"
-    zo_aw = dict()
-    zo_aw['label'] = "ZOAW"
+    za_rg = dict()
+    za_rg['label'] = "ZARG"
     # each algo dict contains label, lists of results for each kind performance metric
     for data in TITLE_DATA_MAP.values():
         bw_gr[data] = list()
         av_gr[data] = list()
         zo_gr[data] = list()
-        zo_aw[data] = list()
+        za_rg[data] = list()
 
     # vary availability min and run algorithms
     for a_m in A_min_list:
@@ -89,9 +89,9 @@ if __name__ == '__main__':
         placement_result3 = zone_aware.run(input_topo3, a_m, session_req_rate, ue_num, handover_frequency)
         perf3 = evaluate(placement_result3, topo, session_req_rate, ue_num, handover_frequency)
         print(perf3)
-        zo_aw['aver_avail'].append(perf3['aver_avail'])
-        zo_aw['num_stb_total'].append(perf3['num_stb_total'])
-        zo_aw['total_bw'].append(perf3['total_bw'])
+        za_rg['aver_avail'].append(perf3['aver_avail'])
+        za_rg['num_stb_total'].append(perf3['num_stb_total'])
+        za_rg['total_bw'].append(perf3['total_bw'])
 
     # create plots
     # create list of ticks on x axis
@@ -101,4 +101,4 @@ if __name__ == '__main__':
 
     title_list = ['Average availability', 'Total number of standbys', 'Total bandwidth usage']
     for title in title_list:
-        draw_bar_chart(xtick, title, bw_gr, av_gr, zo_gr, zo_aw)
+        draw_bar_chart(xtick, title, bw_gr, av_gr, zo_gr, za_rg)

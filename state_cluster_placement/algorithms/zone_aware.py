@@ -30,19 +30,19 @@ def run(input_topo, A_min, session_req_rate, ue_num, handover_frequency):
         BWR[d] = ue_num[d]*(BWR_attach + BWR_ses_req*session_req_rate[d])
         for d_ in DC:
             if d != d_:
-                BWT[(d, d_)] = handover_frequency[d, d_]*BWT_unit
+                BWT[(d, d_)] = handover_frequency[d, d_] * BWT_handover
             else:
                 BWT[(d, d_)] = 0
 
     # init solution
     standby = []
     # build a use tracking tree
-    used_tree = build_use_tracking_tree(DC, AZ, SV, Ad, Adz, Adzs, L, RN)
+    use_track_tree = build_use_track_tree(DC, AZ, SV, Ad, Adz, Adzs, L, RN)
     # run algorithm
     # place standby for each active function
     for active in DC:
         # reset used tree
-        for dc in used_tree['child_nodes']:
+        for dc in use_track_tree['child_nodes']:
             dc['used_child_num'] = 0
             for az in dc['child_nodes']:
                 az['used_child_num'] = 0
@@ -50,10 +50,10 @@ def run(input_topo, A_min, session_req_rate, ue_num, handover_frequency):
         stop = False
         av_tree = {}
         # check used tree to place standby function
-        while not stop and len(used_tree['child_nodes']) != 0:
+        while not stop and len(use_track_tree['child_nodes']) != 0:
             # select centers satisfying latency constraint
             satisfied_latency_dc_list = list()
-            for dc in used_tree['child_nodes']:
+            for dc in use_track_tree['child_nodes']:
                 if dc['latency'][RN[active]] <= L_max:
                     satisfied_latency_dc_list.append(dc)
             # arrange dc list according to used child num
@@ -61,7 +61,7 @@ def run(input_topo, A_min, session_req_rate, ue_num, handover_frequency):
             # create a list of dc which have min used child num
             min_used_child_num_dc = satisfied_latency_dc_list[0]['used_child_num']
             min_dc_list = list()
-            for dc in used_tree['child_nodes']:
+            for dc in use_track_tree['child_nodes']:
                 if dc['used_child_num'] == min_used_child_num_dc:
                     min_dc_list.append(dc)
             # create a list of zones with min used child num
@@ -106,9 +106,9 @@ def run(input_topo, A_min, session_req_rate, ue_num, handover_frequency):
             else:
                 # if not enough resources, check another server
                 # remove center out of used tree
-                for dc in used_tree['child_nodes']:
+                for dc in use_track_tree['child_nodes']:
                     if dc['name'] == d:
-                        del used_tree['child_nodes'][used_tree['child_nodes'].index(dc)]
+                        del use_track_tree['child_nodes'][use_track_tree['child_nodes'].index(dc)]
                         break
                 continue
         # if availability satisfied, stop placement
@@ -120,24 +120,24 @@ def run(input_topo, A_min, session_req_rate, ue_num, handover_frequency):
     return standby
 
 
-def build_use_tracking_tree(DC, AZ, SV, Ad, Adz, Adzs, L, RN):
-    used_tree = dict()
-    used_tree['type'] = 'root node'
-    used_tree['name'] = 'root'
-    used_tree['child_nodes'] = []
-    used_tree['left_server_num'] = sum([len(SV[d, z]) for d in DC for z in AZ[d]])
+def build_use_track_tree(DC, AZ, SV, Ad, Adz, Adzs, L, RN):
+    use_track_tree = dict()
+    use_track_tree['type'] = 'root node'
+    use_track_tree['name'] = 'root'
+    use_track_tree['child_nodes'] = []
+    use_track_tree['left_server_num'] = sum([len(SV[d, z]) for d in DC for z in AZ[d]])
     for d in DC:
         node = dict()
-        used_tree['type'] = 'center'
+        use_track_tree['type'] = 'center'
         node['name'] = d
-        node['parent_node'] = used_tree
+        node['parent_node'] = use_track_tree
         node['child_nodes'] = []
         node['used_child_num'] = 0
         node['latency'] = {}
         for d_ in DC:
             node['latency'][RN[d_]] = L[d, RN[d_]]
-        used_tree['child_nodes'].append(node)
-    for dc in used_tree['child_nodes']:
+        use_track_tree['child_nodes'].append(node)
+    for dc in use_track_tree['child_nodes']:
         for z in AZ[dc['name']]:
             node = dict()
             node['type'] = 'zone'
@@ -146,7 +146,7 @@ def build_use_tracking_tree(DC, AZ, SV, Ad, Adz, Adzs, L, RN):
             node['child_nodes'] = []
             node['used_child_num'] = 0
             dc['child_nodes'].append(node)
-    for dc in used_tree['child_nodes']:
+    for dc in use_track_tree['child_nodes']:
         for az in dc['child_nodes']:
             for s in SV[dc['name'], az['name']]:
                 node = dict()
@@ -156,4 +156,4 @@ def build_use_tracking_tree(DC, AZ, SV, Ad, Adz, Adzs, L, RN):
                 node['child_nodes'] = None
                 node['availability'] = Ad[dc['name']] * Adz[dc['name'], az['name']] * Adzs[dc['name'], az['name'], s]
                 az['child_nodes'].append(node)
-    return used_tree
+    return use_track_tree
