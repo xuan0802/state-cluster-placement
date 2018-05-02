@@ -36,32 +36,33 @@ def run(input_topo, A_min, session_req_rate, ue_num, handover_frequency):
 
     # init solution
     standby = []
-    # build a use tracking tree
-    use_track_tree = build_use_track_tree(DC, AZ, SV, Ad, Adz, Adzs, L, RN)
+    # build a usage track tree
+    usage_track_tree = build_usage_track_tree(DC, AZ, SV, Ad, Adz, Adzs, L, RN)
     # run algorithm
     # place standby for each active function
     for active in DC:
-        # reset used tree
-        for dc in use_track_tree['child_nodes']:
+        # reset usage track tree
+        for dc in usage_track_tree['child_nodes']:
             dc['used_child_num'] = 0
             for az in dc['child_nodes']:
                 az['used_child_num'] = 0
         stb_i = 0
         stop = False
         av_tree = {}
-        # check used tree to place standby function
-        while not stop and len(use_track_tree['child_nodes']) != 0:
-            # select centers satisfying latency constraint
-            satisfied_latency_dc_list = list()
-            for dc in use_track_tree['child_nodes']:
-                if dc['latency'][RN[active]] <= L_max:
-                    satisfied_latency_dc_list.append(dc)
+        # select centers satisfying latency constraint
+        satisfied_latency_dc_list = list()
+        for dc in usage_track_tree['child_nodes']:
+            if dc['latency'][RN[active]] <= L_max:
+                satisfied_latency_dc_list.append(dc)
+
+        # check usage track tree to place standby function
+        while not stop and len(usage_track_tree['child_nodes']) != 0:
             # arrange dc list according to used child num
             satisfied_latency_dc_list.sort(key=lambda x: x['used_child_num'])
             # create a list of dc which have min used child num
             min_used_child_num_dc = satisfied_latency_dc_list[0]['used_child_num']
             min_dc_list = list()
-            for dc in use_track_tree['child_nodes']:
+            for dc in satisfied_latency_dc_list:
                 if dc['used_child_num'] == min_used_child_num_dc:
                     min_dc_list.append(dc)
             # create a list of zones with min used child num
@@ -89,8 +90,15 @@ def run(input_topo, A_min, session_req_rate, ue_num, handover_frequency):
                 # increase used child num
                 sv_list[0]['parent_node']['used_child_num'] += 1
                 sv_list[0]['parent_node']['parent_node']['used_child_num'] += 1
-                # remove server out of used tree
+                # remove server out of usage track tree
                 sv_list[0]['parent_node']['child_nodes'].remove(sv_list[0])
+                # if all servers are used, remove zone
+                if len(sv_list[0]['parent_node']['child_nodes']) == 0:
+                    sv_list[0]['parent_node']['parent_node']['child_nodes'].remove(sv_list[0]['parent_node'])
+                # if all zones are used, remove center
+                if len(sv_list[0]['parent_node']['parent_node']['child_nodes']) == 0:
+                    usage_track_tree['child_nodes'].remove(sv_list[0]['parent_node']['parent_node'])
+
                 # decrease compute resources, bandwidth resources
                 C[d] = C[d] - RD[active]
                 stb_i = stb_i + 1
@@ -104,28 +112,24 @@ def run(input_topo, A_min, session_req_rate, ue_num, handover_frequency):
                     stop = True
                     break
             else:
-                # if not enough resources, check another server
-                # remove center out of used tree
-                for dc in use_track_tree['child_nodes']:
-                    if dc['name'] == d:
-                        del use_track_tree['child_nodes'][use_track_tree['child_nodes'].index(dc)]
-                        break
+                # remove center out of list
+                satisfied_latency_dc_list.remove(sv_list[0]['parent_node']['parent_node'])
                 continue
         # if availability satisfied, stop placement
         if stop:
             continue
         else:
-            print("zone aware model infeasible")
+            print("usage aware model infeasible")
             print("can't place for active at %s" % active)
+            quit()
     return standby
 
 
-def build_use_track_tree(DC, AZ, SV, Ad, Adz, Adzs, L, RN):
+def build_usage_track_tree(DC, AZ, SV, Ad, Adz, Adzs, L, RN):
     use_track_tree = dict()
     use_track_tree['type'] = 'root node'
     use_track_tree['name'] = 'root'
     use_track_tree['child_nodes'] = []
-    use_track_tree['left_server_num'] = sum([len(SV[d, z]) for d in DC for z in AZ[d]])
     for d in DC:
         node = dict()
         use_track_tree['type'] = 'center'

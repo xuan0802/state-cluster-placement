@@ -1,5 +1,5 @@
 # Constants
-L_max = 200
+L_max = 220
 Af = 0.99
 RD_init = 10
 RD_unit = 0.01
@@ -18,6 +18,6 @@ TITLE_DATA_MAP = {
 # mapping title and y limit
 TITLE_YLIMIT_MAP = {
     'Average availability': (0.998, 1),
-    'Total number of standbys': (10, 100),
-    'Total bandwidth usage': (8000, 37000)
+    'Total number of standbys': (10, 150),
+    'Total bandwidth usage (Mbps)': (5000, 37000)
 }

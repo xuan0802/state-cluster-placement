@@ -84,10 +84,10 @@ def draw_bar_chart(xtick, title, *algorithms):
                bar_width, alpha=opacity, color=color_list[i], label=algo['label'])
         i = i + 1
     ax.set_ylim(TITLE_YLIMIT_MAP[title])
-    ax.set_xlabel('A_min')
-    ax.set_ylabel(title)
+    ax.set_xlabel('A_min', fontsize='x-large')
+    ax.set_ylabel(title, fontsize='x-large')
     ax.set_xticks(index + bar_width)
     ax.set_xticklabels(xtick)
-    ax.legend()
+    ax.legend(fontsize='large')
     fig.tight_layout()
     plt.show()

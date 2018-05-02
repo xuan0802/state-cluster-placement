@@ -86,17 +86,17 @@ def run(input_topo, A_min, session_req_rate, ue_num, handover_frequency):
                         stop = True
                         break
                 else:
-                    # if not enough resources, check another server
+                    # if not enough resources, check another center
                     continue
             else:
-                # if zone already used, check another server
+                # if zone already used, check another
                 continue
             # if availability satisfied, stop placement
             if stop:
                 print(avail_r)
                 break
         if not stop:
-            print("zone aware model infeasible")
+            print("zone greedy model infeasible")
             print("can't place for active at %s" % active)
     return standby
 

@@ -87,11 +87,11 @@ def run(input_topo, A_min, session_req_rate, ue_num, handover_frequency):
                         # if availability satisfied, stop placement
                         break
                 else:
-                    # if not enough resources, check another server
+                    # if not enough resources, check another center
                     continue
 
             else:
-                # if not exist, check another server
+                # if not exist, check another
                 continue
 
             # if availability satisfied, stop placement

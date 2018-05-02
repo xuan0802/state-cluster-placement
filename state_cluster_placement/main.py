@@ -1,6 +1,6 @@
 
 from state_cluster_placement.topos import random_topo
-from state_cluster_placement.algorithms import bandwidth_greedy, zone_greedy, avail_greedy, zone_aware
+from state_cluster_placement.algorithms import bandwidth_greedy, zone_greedy, avail_greedy, usage_aware
 from state_cluster_placement.evaluation import evaluate
 from state_cluster_placement.ultilities import save_to_file, load_topo, draw_bar_chart
 from copy import deepcopy
@@ -9,17 +9,17 @@ from random import choice
 
 if __name__ == '__main__':
     """run all algorithms and make plots"""
-    # # create a random topology
-    # input_topo = random_topo.initialize_input()
-    # # save topo in a file
-    # save_to_file(input_topo, "topo_json/topo.json")
-    # # load topo from a file
+    # create a random topology
+    input_topo = random_topo.initialize_input()
+    # save topo in a file
+    save_to_file(input_topo, "topo_json/topo.json")
+    # load topo from a file
     topo = load_topo("topo_json/topo.json")
 
     # create resource demand and bandwidth transfer and replication
     session_req_rate_list = [7]
-    ue_num_list = [1000]
-    handover_frequency_list = [1500]
+    ue_num_list = [500]
+    handover_frequency_list = [1000]
     session_req_rate = {}
     ue_num = {}
     handover_frequency = {}
@@ -41,14 +41,14 @@ if __name__ == '__main__':
     av_gr['label'] = "AVGR"
     zo_gr = dict()
     zo_gr['label'] = "ZOGR"
-    za_rg = dict()
-    za_rg['label'] = "ZARG"
+    ua_rg = dict()
+    ua_rg['label'] = "UARG"
     # each algo dict contains label, lists of results for each kind performance metric
     for data in TITLE_DATA_MAP.values():
         bw_gr[data] = list()
         av_gr[data] = list()
         zo_gr[data] = list()
-        za_rg[data] = list()
+        ua_rg[data] = list()
 
     # vary availability min and run algorithms
     for a_m in A_min_list:
@@ -84,21 +84,21 @@ if __name__ == '__main__':
         av_gr['num_stb_total'].append(perf2['num_stb_total'])
         av_gr['total_bw'].append(perf2['total_bw'])
 
-        print("------------zone aware-------------")
+        print("------------usage aware-------------")
         input_topo3 = deepcopy(topo)
-        placement_result3 = zone_aware.run(input_topo3, a_m, session_req_rate, ue_num, handover_frequency)
+        placement_result3 = usage_aware.run(input_topo3, a_m, session_req_rate, ue_num, handover_frequency)
         perf3 = evaluate(placement_result3, topo, session_req_rate, ue_num, handover_frequency)
         print(perf3)
-        za_rg['aver_avail'].append(perf3['aver_avail'])
-        za_rg['num_stb_total'].append(perf3['num_stb_total'])
-        za_rg['total_bw'].append(perf3['total_bw'])
+        ua_rg['aver_avail'].append(perf3['aver_avail'])
+        ua_rg['num_stb_total'].append(perf3['num_stb_total'])
+        ua_rg['total_bw'].append(perf3['total_bw'])
 
     # create plots
     # create list of ticks on x axis
     xtick = list()
     for a in A_min_list:
-        xtick.append('a = ' + str(a))
+        xtick.append('A_min = ' + str(a))
 
-    title_list = ['Average availability', 'Total number of standbys', 'Total bandwidth usage']
+    title_list = ['Average availability', 'Total number of standbys', 'Total bandwidth usage (Mbps)']
     for title in title_list:
-        draw_bar_chart(xtick, title, bw_gr, av_gr, zo_gr, za_rg)
+        draw_bar_chart(xtick, title, bw_gr, av_gr, zo_gr, ua_rg)

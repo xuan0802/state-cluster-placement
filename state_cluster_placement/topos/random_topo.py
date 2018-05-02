@@ -19,7 +19,7 @@ def initialize_input():
     # init set of cloud centers, zones, servers, radio nodes
     for i in range(N_DC):
         DC.append('dc' + str(i))
-        zone_num_list = [2, 3, 5]
+        zone_num_list = [10]
     for d in DC:
         AZ[d] = []
         N_AZ = choice(zone_num_list)
