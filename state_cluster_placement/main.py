@@ -9,11 +9,11 @@ from random import choice
 
 if __name__ == '__main__':
     """run all algorithms and make plots"""
-    # create a random topology
-    input_topo = random_topo.initialize_input()
-    # save topo in a file
-    save_to_file(input_topo, "topo_json/topo.json")
-    # load topo from a file
+    # # create a random topology
+    # input_topo = random_topo.initialize_input()
+    # # save topo in a file
+    # save_to_file(input_topo, "topo_json/topo.json")
+    # # load topo from a file
     topo = load_topo("topo_json/topo.json")
 
     # create resource demand and bandwidth transfer and replication

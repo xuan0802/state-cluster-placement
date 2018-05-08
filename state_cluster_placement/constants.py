@@ -17,7 +17,7 @@ TITLE_DATA_MAP = {
 
 # mapping title and y limit
 TITLE_YLIMIT_MAP = {
-    'Average availability': (0.998, 1),
+    'Average availability': (0.997, 1),
     'Total number of standbys': (10, 150),
-    'Total bandwidth usage (Mbps)': (5000, 37000)
+    'Total bandwidth usage (Mbps)': (5000, 52000)
 }
